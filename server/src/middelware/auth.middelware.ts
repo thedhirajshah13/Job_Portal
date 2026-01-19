@@ -1,0 +1,31 @@
+import { NextFunction, Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+
+export const authMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.cookies?.token;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string,
+    ) as JwtPayload;
+    if (!decoded) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    req.user = {
+      userId: decoded.userId as string,
+      role: decoded.role as "applicant" | "recruiter",
+    };
+
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
