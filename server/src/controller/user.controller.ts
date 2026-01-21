@@ -14,6 +14,7 @@ interface logInBody {
   password: string;
 }
 
+// SignUp
 export const signUp = async (
   req: Request<{}, {}, signUpBody>,
   res: Response,
@@ -41,6 +42,7 @@ export const signUp = async (
   }
 };
 
+// LogIn
 export const logIn = async (req: Request<{}, {}, logInBody>, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -64,12 +66,27 @@ export const logIn = async (req: Request<{}, {}, logInBody>, res: Response) => {
       sameSite: "strict",
       maxAge: 60 * 60 * 1000, //1 hour
     });
-    return res
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: { name: user.name, email: user.email, role: user.role },
-      });
+    return res.status(200).json({
+      message: "Login successful",
+      user: { name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// LogOut
+
+export const logOut = (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000,
+    });
+    return res.status(200).json({ message: "Logout successful" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal Server Error" });

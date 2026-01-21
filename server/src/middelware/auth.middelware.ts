@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export const authMiddleware = async (
+export const authMiddelware = async (
   req: Request,
   res: Response,
   next: NextFunction,
